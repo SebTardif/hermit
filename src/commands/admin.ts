@@ -165,13 +165,29 @@ export class AutomodBypassToggle extends BaseCommand {
 		}
 
 		if (user.roles.find(x => x.id === "1469051644024193126")) {
-			user.removeRole("1469051644024193126", "Removed automod bypass role").catch(() => { })
+			try {
+				await user.removeRole("1469051644024193126", "Removed automod bypass role")
+			} catch {
+				await interaction.reply({
+					content: "Failed to remove automod bypass role.",
+					ephemeral: true
+				})
+				return
+			}
 			await interaction.reply({
 				content: `Removed automod bypass role from <@${user.user.id}>.`,
 				ephemeral: true
 			})
 		} else {
-			user.addRole("1469051644024193126", "Added automod bypass role").catch(() => { })
+			try {
+				await user.addRole("1469051644024193126", "Added automod bypass role")
+			} catch {
+				await interaction.reply({
+					content: "Failed to add automod bypass role.",
+					ephemeral: true
+				})
+				return
+			}
 			await interaction.reply({
 				content: `Added automod bypass role to <@${user.user.id}>.`,
 				ephemeral: true
