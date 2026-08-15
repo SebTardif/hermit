@@ -109,8 +109,13 @@ export class InactivityWarn extends BaseCommand {
 			type: ChannelType.PrivateThread
 		})
 		const actorId = interaction.user?.id ?? interaction.userId
+		let addMemberFailed = false
 		if (actorId) {
-			await thread.addMember(actorId).catch(() => { })
+			try {
+				await thread.addMember(actorId)
+			} catch {
+				addMemberFailed = true
+			}
 		}
 
 		const deadline = Math.floor((Date.now() + 2 * 24 * 60 * 60 * 1000) / 1000)
@@ -128,6 +133,14 @@ Please reply in this channel by <t:${deadline}:F> (<t:${deadline}:R>) and confir
 If you need time away, post an LOA in your team channel (dates) and ${leadLine}
 
 If there’s no response by that deadline, we’ll move forward with role removal.`)
+
+		if (addMemberFailed) {
+			await interaction.reply({
+				content: `Created inactivity warning thread for <@${user.id}> in <#${inactivityWarnChannel}>. Failed to add you to the thread.`,
+				ephemeral: true
+			})
+			return
+		}
 
 		await interaction.reply({
 			content: `Created inactivity warning thread for <@${user.id}> in <#${inactivityWarnChannel}>.`,
