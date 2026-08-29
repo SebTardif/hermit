@@ -200,14 +200,30 @@ class ClaimReviewAcceptButton extends Button {
 			return
 		}
 
-		await recordClaimDecision({
-			userId,
-			guildId,
-			status: "accepted",
-			decidedById: interaction.user?.id
-		}).catch((error) => {
+		try {
+			await recordClaimDecision({
+				userId,
+				guildId,
+				status: "accepted",
+				decidedById: interaction.user?.id
+			})
+		} catch (error) {
 			console.error("Failed to record accepted claim:", error)
-		})
+			await interaction.reply({
+				components: [
+					new Container(
+						[
+							new TextDisplay("### Could not record claim"),
+							new TextDisplay(
+								"The clawtributors role was added, but the claim decision could not be saved. Ask a moderator to retry or update the claim record."
+							)
+						],
+						{ accentColor: "#f85149" }
+					)
+				]
+			})
+			return
+		}
 
 		const user = await interaction.client.fetchUser(userId).catch(() => null)
 		await user?.send({
