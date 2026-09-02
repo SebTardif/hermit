@@ -16,6 +16,7 @@ describe("command deployment lifecycle", () => {
 		const second = trackDeployment(context)
 
 		expect(deployCommands).toHaveBeenCalledTimes(1)
+		expect(deployCommands).toHaveBeenCalledWith({ mode: "reconcile" })
 		expect(first).toBe(second)
 		expect(tracked).toEqual([first, first])
 		await first
@@ -44,6 +45,12 @@ describe("command deployment lifecycle", () => {
 				usedDevGuilds: false
 			})
 			expect(deployCommands).toHaveBeenCalledTimes(2)
+			expect(deployCommands).toHaveBeenNthCalledWith(1, {
+				mode: "reconcile"
+			})
+			expect(deployCommands).toHaveBeenNthCalledWith(2, {
+				mode: "reconcile"
+			})
 			expect(consoleError).toHaveBeenCalledTimes(1)
 		} finally {
 			console.error = previousConsoleError

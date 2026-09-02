@@ -132,8 +132,8 @@ if (eventsRoute) {
 }
 
 const handler = createHandler(client)
-const trackCommandDeployment = createCommandDeploymentTracker(() =>
-	client.deployCommands()
+const trackCommandDeployment = createCommandDeploymentTracker((options) =>
+	client.deployCommands(options)
 )
 
 export default {
