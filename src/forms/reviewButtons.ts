@@ -336,7 +336,13 @@ const decide = async (
 			actionResult = `${actionResult}\nNew duration: ${duration}`
 		}
 	} catch (error) {
-		actionResult = error instanceof Error ? error.message : "Unknown action error."
+		const message = error instanceof Error ? error.message : "Unknown action error."
+		await interaction.reply({
+			components: [resultContainer("Form action failed", message, "#f85149")],
+			ephemeral: true,
+			allowedMentions: { parse: [] }
+		})
+		return
 	}
 
 	await recordFormDecision(loaded.id, {
