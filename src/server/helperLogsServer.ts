@@ -1,5 +1,6 @@
 import type { Client } from "@buape/carbon"
 import { listEvents, listTrackedThreads } from "../data/helperLogs.js"
+import { getRuntimeEnv } from "../runtime/env.js"
 
 const asStringOrNull = (value: unknown): string | null =>
 	typeof value === "string" && value.trim().length > 0 ? value.trim() : null
@@ -21,6 +22,18 @@ const json = (data: unknown, init?: ResponseInit) =>
 			...init?.headers
 		}
 	})
+
+const bearerToken = (request: Request) =>
+	request.headers.get("authorization")?.match(/^Bearer\s+(.+)$/i)?.[1] ?? ""
+
+const requireDeploySecret = (request: Request) => {
+	const token = getRuntimeEnv().DEPLOY_SECRET
+	if (!token || bearerToken(request) !== token) {
+		return json({ error: "Unauthorized" }, { status: 401 })
+	}
+
+	return null
+}
 
 const renderHtml = () => `<!doctype html>
 <html lang="en">
@@ -62,6 +75,11 @@ export const registerHelperLogsRoutes = (client: Client) => {
 			method: "GET",
 			path: "/api/events",
 			handler: async (request) => {
+				const denied = requireDeploySecret(request)
+				if (denied) {
+					return denied
+				}
+
 				const url = new URL(request.url)
 				const events = await listEvents({
 					eventType: asStringOrNull(url.searchParams.get("eventType")),
@@ -80,6 +98,11 @@ export const registerHelperLogsRoutes = (client: Client) => {
 			method: "GET",
 			path: "/api/threads",
 			handler: async (request) => {
+				const denied = requireDeploySecret(request)
+				if (denied) {
+					return denied
+				}
+
 				const url = new URL(request.url)
 				const threads = await listTrackedThreads({
 					threadId: asStringOrNull(url.searchParams.get("threadId")),
