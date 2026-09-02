@@ -471,15 +471,32 @@ class ClaimReviewRejectModal extends Modal {
 			return
 		}
 
-		await recordClaimDecision({
-			userId,
-			guildId,
-			status: "rejected",
-			decidedById: interaction.user?.id,
-			decisionReason: reason
-		}).catch((error) => {
+		try {
+			await recordClaimDecision({
+				userId,
+				guildId,
+				status: "rejected",
+				decidedById: interaction.user?.id,
+				decisionReason: reason
+			})
+		} catch (error) {
 			console.error("Failed to record rejected claim:", error)
-		})
+			await interaction.reply({
+				components: [
+					new Container(
+						[
+							new TextDisplay("### Could not record claim"),
+							new TextDisplay(
+								"The claim decision could not be saved. The applicant was not notified. Ask a moderator to retry or update the claim record."
+							)
+						],
+						{ accentColor: "#f85149" }
+					)
+				],
+				ephemeral: true
+			})
+			return
+		}
 
 		const user = await interaction.client.fetchUser(userId).catch(() => null)
 		await user?.send({
