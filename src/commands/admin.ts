@@ -136,7 +136,11 @@ If there’s no response by that deadline, we’ll move forward with role remova
 
 		if (addMemberFailed) {
 			await interaction.reply({
-				content: `Created inactivity warning thread for <@${user.id}> in <#${inactivityWarnChannel}>. Failed to add you to the thread.`,
+				components: [
+					new Container([
+						new TextDisplay(`Created inactivity warning thread for <@${user.id}> in <#${inactivityWarnChannel}>. Failed to add you to the thread.`)
+					])
+				],
 				ephemeral: true
 			})
 			return
