@@ -3,6 +3,7 @@ import type { FormConfig, FormField } from "./src/forms/types.js"
 export const formSettings = {
 	reviewChannelId: "1467242758183059536",
 	reviewRoleId: "1477360613125787678",
+	reviewPingRoleId: "1546936406272778271",
 	clawhubAppealReviewChannelId: "1498032057337647295",
 	clawhubAppealReviewRoleId: "1509967254870298794",
 	moderatorReportReviewChannelId: "1457498550651851005",
@@ -55,6 +56,7 @@ export const formConfigs = [
 		requiredAction: "banned",
 		reviewChannelId: formSettings.reviewChannelId,
 		reviewRoleId: formSettings.reviewRoleId,
+		reviewPingRoleId: formSettings.reviewPingRoleId,
 		successMessage: "Submitted.",
 		fields: appealFields,
 		actions: {
@@ -77,6 +79,7 @@ export const formConfigs = [
 		requiredAction: "muted",
 		reviewChannelId: formSettings.reviewChannelId,
 		reviewRoleId: formSettings.reviewRoleId,
+		reviewPingRoleId: formSettings.reviewPingRoleId,
 		successMessage: "Submitted.",
 		fields: appealFields,
 		actions: {
@@ -99,6 +102,7 @@ export const formConfigs = [
 		requiredAction: "banned",
 		reviewChannelId: formSettings.reviewChannelId,
 		reviewRoleId: formSettings.reviewRoleId,
+		reviewPingRoleId: formSettings.reviewPingRoleId,
 		successMessage: "Submitted.",
 		fields: appealFields,
 		actions: {
@@ -192,6 +196,7 @@ export const formConfigs = [
 		requiredAction: "banned",
 		reviewChannelId: formSettings.reviewChannelId,
 		reviewRoleId: formSettings.reviewRoleId,
+		reviewPingRoleId: formSettings.reviewPingRoleId,
 		successMessage: "Submitted.",
 		fields: appealFields,
 		actions: {
@@ -213,6 +218,7 @@ export const formConfigs = [
 		auth: ["discord", "github", "reddit"],
 		reviewChannelId: formSettings.moderatorReportReviewChannelId,
 		reviewRoleId: formSettings.moderatorReportReviewRoleId,
+		reviewPingRoleId: formSettings.reviewPingRoleId,
 		successMessage: "Submitted.",
 		fields: [
 			{
