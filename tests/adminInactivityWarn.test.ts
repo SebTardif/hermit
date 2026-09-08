@@ -1,5 +1,12 @@
 import { describe, expect, it } from "bun:test"
-import { ChannelType, type CommandInteraction } from "@buape/carbon"
+import {
+	ChannelType,
+	ComponentType,
+	MessageFlags,
+	serializePayload,
+	type CommandInteraction,
+	type MessagePayloadObject
+} from "@buape/carbon"
 import { InactivityWarn } from "../src/commands/admin.js"
 
 const inactivityWarnChannel = "1477357508833185954"
@@ -16,7 +23,7 @@ const runWarn = async (options: {
 	const addedMembers: string[] = []
 	const sent: string[] = []
 	const threadStarts: unknown[] = []
-	const replies: Array<{ content?: string; ephemeral?: boolean }> = []
+	const replies: MessagePayloadObject[] = []
 
 	const thread = {
 		addMember: options.addMember ?? (async (id: string) => {
@@ -46,7 +53,7 @@ const runWarn = async (options: {
 		client: {
 			fetchChannel: async () => channel
 		},
-		reply: async (payload: { content?: string; ephemeral?: boolean }) => {
+		reply: async (payload: MessagePayloadObject) => {
 			replies.push(payload)
 		}
 	} as unknown as CommandInteraction
@@ -55,9 +62,6 @@ const runWarn = async (options: {
 
 	return { replies, addedMembers, sent, threadStarts, userId, actorId }
 }
-
-const replyContent = (replies: Array<{ content?: string }>) =>
-	replies.map((reply) => reply.content ?? "").join("\n")
 
 describe("/admin inactivity-warn", () => {
 	it("does not claim unqualified success when addMember is rejected", async () => {
@@ -71,13 +75,20 @@ describe("/admin inactivity-warn", () => {
 		expect(sent).toHaveLength(1)
 		expect(replies).toHaveLength(1)
 		expect(replies[0]?.ephemeral).toBe(true)
-		expect(replyContent(replies)).not.toBe(
-			`Created inactivity warning thread for <@${userId}> in <#${inactivityWarnChannel}>.`
-		)
-		expect(replyContent(replies).toLowerCase()).toContain("failed")
-		expect(replyContent(replies)).toContain(
-			`Created inactivity warning thread for <@${userId}>`
-		)
+		const payload = serializePayload(replies[0]!)
+		expect(payload.content).toBeUndefined()
+		expect(payload.flags).toBe(MessageFlags.Ephemeral | MessageFlags.IsComponentsV2)
+		expect(payload.components).toMatchObject([
+			{
+				type: ComponentType.Container,
+				components: [
+					{
+						type: ComponentType.TextDisplay,
+						content: `Created inactivity warning thread for <@${userId}> in <#${inactivityWarnChannel}>. Failed to add you to the thread.`
+					}
+				]
+			}
+		])
 	})
 
 	it("reports created thread after addMember resolves", async () => {
