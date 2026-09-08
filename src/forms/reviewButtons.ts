@@ -7,7 +7,6 @@ import {
 	Label,
 	Modal,
 	type ModalInteraction,
-	type MessagePayloadObject,
 	Row,
 	Section,
 	Separator,
@@ -200,7 +199,6 @@ export const buildFormReviewContainer = (
 	} = {}
 ) => {
 	const status = options.status ?? "submitted"
-	const pingRoleId = form.reviewPingRoleId ?? form.reviewRoleId
 	const submittedAt = submission.createdAt ? Math.floor(new Date(submission.createdAt).getTime() / 1000) : Math.floor(Date.now() / 1000)
 	const decidedAt = Math.floor(Date.now() / 1000)
 	const footer = [
@@ -215,7 +213,7 @@ export const buildFormReviewContainer = (
 	].filter((line): line is string => Boolean(line))
 	return new Container(
 		[
-			...(pingRoleId ? [new TextDisplay(`-# <@&${pingRoleId}>`)] : []),
+			...(form.reviewRoleId ? [new TextDisplay(`-# <@&${form.reviewRoleId}>`)] : []),
 			new TextDisplay(`## ${titleFor(form, submission)}`),
 			...detailComponentsFor(form, submission),
 			new Separator({ divider: true, spacing: "small" }),
@@ -234,17 +232,6 @@ export const buildFormReviewContainer = (
 		],
 		{ accentColor: statusColor(status) }
 	)
-}
-
-export const buildFormReviewMessage = (
-	form: FormConfig,
-	submission: FormSubmission
-): MessagePayloadObject => {
-	const pingRoleId = form.reviewPingRoleId ?? form.reviewRoleId
-	return {
-		components: [buildFormReviewContainer(form, submission)],
-		allowedMentions: pingRoleId ? { roles: [pingRoleId], users: [] } : { parse: [] }
-	}
 }
 
 const resultContainer = (title: string, body: string, color: string) =>

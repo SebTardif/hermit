@@ -1,5 +1,5 @@
 import type { Client } from "@buape/carbon"
-import { buildFormReviewMessage } from "./reviewButtons.js"
+import { buildFormReviewContainer } from "./reviewButtons.js"
 import { formSettings } from "../../forms.config.js"
 import { getAvailableFormConfigs, getFormAuthProviders, getFormConfig, renderFormText } from "./forms.js"
 import type { FormAuthProvider, FormConfig } from "./types.js"
@@ -178,7 +178,10 @@ const sendReview = async (
 	if (!channel || !("send" in channel)) {
 		throw new Error(`Review channel ${form.reviewChannelId} is not sendable.`)
 	}
-	const message = await channel.send(buildFormReviewMessage(form, submission))
+	const message = await channel.send({
+		components: [buildFormReviewContainer(form, submission)],
+		allowedMentions: form.reviewRoleId ? { roles: [form.reviewRoleId], users: [] } : { parse: [] }
+	})
 	const threadResponse = await fetch(
 		`${discordApiBase}/channels/${form.reviewChannelId}/messages/${message.id}/threads`,
 		{

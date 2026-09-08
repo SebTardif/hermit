@@ -51,8 +51,6 @@ export type FormConfig = {
 	requiredAction?: Exclude<ModerationAction, "moderated">
 	reviewChannelId: string
 	reviewRoleId: string | null
-	/** Notification role; defaults to reviewRoleId without changing review permissions. */
-	reviewPingRoleId?: string
 	successMessage: string
 	fields: FormField[]
 	actions: { accept: FormAction[]; deny: FormAction[] }
