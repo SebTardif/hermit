@@ -5,7 +5,9 @@ import {
 	ApplicationCommandOptionType,
 	CommandWithSubcommands,
 	PermissionFlagsBits,
-	ChannelType
+	ChannelType,
+	Container,
+	TextDisplay
 } from "@buape/carbon"
 import BaseCommand from "./base.js"
 
@@ -137,6 +139,7 @@ If there’s no response by that deadline, we’ll move forward with role remova
 export class AutomodBypassToggle extends BaseCommand {
 	name = "automod-bypass-toggle"
 	description = "Toggle automod bypass for a user"
+	ephemeral = true
 
 	options = [
 		{
@@ -169,7 +172,7 @@ export class AutomodBypassToggle extends BaseCommand {
 				await user.removeRole("1469051644024193126", "Removed automod bypass role")
 			} catch {
 				await interaction.reply({
-					content: "Failed to remove automod bypass role.",
+					components: [new Container([new TextDisplay("Failed to remove automod bypass role.")])],
 					ephemeral: true
 				})
 				return
@@ -183,7 +186,7 @@ export class AutomodBypassToggle extends BaseCommand {
 				await user.addRole("1469051644024193126", "Added automod bypass role")
 			} catch {
 				await interaction.reply({
-					content: "Failed to add automod bypass role.",
+					components: [new Container([new TextDisplay("Failed to add automod bypass role.")])],
 					ephemeral: true
 				})
 				return
