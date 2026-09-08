@@ -449,6 +449,74 @@ class ClaimReviewReasonLabel extends Label {
 	}
 }
 
+const restorePendingClaimReview = async (
+	interaction: ModalInteraction,
+	userId: string,
+	guildId: string
+) => {
+	const message = interaction.message
+	const components = message?.rawData.components
+	if (!message || components?.length !== 1) return false
+	const container = components[0]
+	if (container.type !== ComponentType.Container) return false
+
+	const children = container.components
+	const footer = children.at(-1)
+	const separator = children.at(-2)
+	const row = children.at(-3)
+	if (
+		footer?.type !== ComponentType.TextDisplay ||
+		footer.content !==
+			`Rejection in progress by <@${interaction.user?.id ?? "unknown"}>.` ||
+		separator?.type !== ComponentType.Separator ||
+		row?.type !== ComponentType.ActionRow ||
+		row.components.length !== 2 ||
+		!["accept", "reject"].every((action) =>
+			row.components.some(
+				(button) =>
+					"custom_id" in button &&
+					button.custom_id ===
+						`claim-review-${action}:userId=s${userId};guildId=s${guildId}`
+			)
+		)
+	) {
+		return false
+	}
+
+	const restored: Container["components"] = []
+	for (const child of children.slice(0, -3)) {
+		if (child.type === ComponentType.TextDisplay) {
+			restored.push(new TextDisplay(child.content))
+		} else if (child.type === ComponentType.Separator) {
+			restored.push(
+				new Separator({
+					divider: child.divider,
+					spacing: child.spacing === 2 ? "large" : "small"
+				})
+			)
+		} else {
+			// Preserve unfamiliar cards rather than silently dropping their content.
+			return false
+		}
+	}
+	restored.push(
+		new Row([
+			new ClaimReviewAcceptButton(userId, guildId),
+			new ClaimReviewRejectButton(userId, guildId)
+		])
+	)
+	await message.edit({
+		components: [
+			new Container(restored, {
+				accentColor: container.accent_color ?? undefined,
+				spoiler: container.spoiler
+			})
+		],
+		allowedMentions: { parse: [] }
+	})
+	return true
+}
+
 class ClaimReviewRejectModal extends Modal {
 	title = "Reject Clawtributor Claim"
 	customId = "claim-review-reject-modal"
@@ -497,13 +565,23 @@ class ClaimReviewRejectModal extends Modal {
 			})
 		} catch (error) {
 			console.error("Failed to record rejected claim:", error)
+			const restored = await restorePendingClaimReview(
+				interaction,
+				userId,
+				guildId
+			).catch((restoreError) => {
+				console.error("Failed to restore claim review message:", restoreError)
+				return false
+			})
 			await interaction.reply({
 				components: [
 					new Container(
 						[
 							new TextDisplay("### Could not record claim"),
 							new TextDisplay(
-								"The claim decision could not be saved. The applicant was not notified. Ask a moderator to retry or update the claim record."
+								restored
+									? "The claim decision could not be saved. The applicant was not notified. The review buttons have been restored; please try again."
+									: "The claim decision could not be saved. The applicant was not notified, and the review could not be reopened automatically. Ask a moderator to restore the review message or update the claim record."
 							)
 						],
 						{ accentColor: "#f85149" }
