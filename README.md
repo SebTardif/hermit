@@ -59,6 +59,12 @@ bun run db:apply:remote
 bun run dev
 ```
 
+## Helper logs API
+
+`GET /api/events` and `GET /api/threads` require `Authorization: Bearer <DEPLOY_SECRET>`. Update any scripts consuming these endpoints to send that header. Missing or incorrect credentials return HTTP 401; the endpoints also reject requests when `DEPLOY_SECRET` is unset.
+
+The HTML index at `/` remains public and contains only endpoint links and filter documentation.
+
 ## Scripts
 
 - `bun run dev` → `wrangler dev --env-file .env`
