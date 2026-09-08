@@ -59,6 +59,12 @@ bun run db:apply:remote
 bun run dev
 ```
 
+## Helper logs API
+
+`GET /api/events` and `GET /api/threads` require `Authorization: Bearer <DEPLOY_SECRET>`. Update any scripts consuming these endpoints to send that header. Missing or incorrect credentials return HTTP 401; the endpoints also reject requests when `DEPLOY_SECRET` is unset.
+
+The HTML index at `/` remains public and contains only endpoint links and filter documentation.
+
 ## Form review notifications
 
 Configure forms in `forms.config.ts`. `reviewRoleId` controls who can accept or deny submissions; optional `reviewPingRoleId` selects the role notified on new submissions and defaults to `reviewRoleId`.
