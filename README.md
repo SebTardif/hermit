@@ -65,6 +65,12 @@ bun run dev
 
 The HTML index at `/` remains public and contains only endpoint links and filter documentation.
 
+## Form review notifications
+
+Configure forms in `forms.config.ts`. `reviewRoleId` controls who can accept or deny submissions; optional `reviewPingRoleId` selects the role notified on new submissions and defaults to `reviewRoleId`.
+
+Discord, GitHub, and Reddit appeals plus moderator reports notify `1546936406272778271`, while Community Team (`1477360613125787678`) retains review access. ClawHub notifications and review access use `1509967254870298794`.
+
 ## Scripts
 
 - `bun run dev` → `wrangler dev --env-file .env`
