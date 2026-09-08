@@ -88,6 +88,10 @@ bun run db:generate
 bun run db:apply:remote
 ```
 
+## Clawtributor claim review
+
+If saving a rejection fails, Hermit does not notify the applicant and restores the review buttons for another attempt. If Discord also rejects the message update, the reviewer receives an error explaining that the review could not be reopened automatically and needs moderator recovery.
+
 ## Gateway forwarder
 
 The main bot runs as a Cloudflare Worker. Gateway events are forwarded by the Bun app in `forwarder/`, usually running on Krill's machine.
