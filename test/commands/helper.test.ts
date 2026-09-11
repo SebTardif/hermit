@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, mock, test } from "bun:test"
 import { Permission, type Command, type CommandInteraction } from "@buape/carbon"
-import HelperRootCommand from "./helper.js"
-import SolvedModCommand from "./solvedMod.js"
+import HelperRootCommand from "../../src/commands/helper.js"
+import SolvedModCommand from "../../src/commands/solvedMod.js"
 
 const helperParentId = "helper-forum-parent"
 
