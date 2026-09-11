@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, test } from "bun:test"
 import { formConfigs } from "../../forms.config.js"
-import type { FormSubmission } from "../db/schema.js"
-import { clawHubUnbanRequest, resolveTarget } from "./actions.js"
-import { buildSubmissionPayload, collectPayload } from "./payload.js"
+import type { FormSubmission } from "../../src/db/schema.js"
+import { clawHubUnbanRequest, resolveTarget } from "../../src/forms/actions.js"
+import { buildSubmissionPayload, collectPayload } from "../../src/forms/payload.js"
 
 const clawhubForm = formConfigs.find((form) => form.id === "clawhub")
 if (!clawhubForm) {
